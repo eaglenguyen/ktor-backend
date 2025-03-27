@@ -28,8 +28,8 @@ fun Route.signUp(
             call.respond(HttpStatusCode.BadRequest)
             return@post
         }
-        val areFieldsBlank = request.name.isBlank() || request.email.isBlank() || request.password.isBlank()
-        val isPwTooShort = request.password.length < 8
+         val areFieldsBlank = request.name!!.isBlank() || request.email.isBlank() || request.password.isBlank()
+         val isPwTooShort = request.password.length < 8
          if (areFieldsBlank || isPwTooShort) {
              call.respond(HttpStatusCode.Conflict)
              return@post
@@ -38,7 +38,7 @@ fun Route.signUp(
          // Check if the username is already in use
          val existingUsername = userDataSource.getUserByEmail(request.email)
          if (existingUsername != null) {
-             call.respond(HttpStatusCode.Conflict, "Username is already in use")
+             call.respond(HttpStatusCode.Conflict, "Email is already in use")
              return@post
          }
 
@@ -74,8 +74,8 @@ fun Route.signIn(
         }
 
         val user = userDataSource.getUserByEmail(request.email)
-        if(user==null) {
-            call.respond(HttpStatusCode.Conflict, "Incorrect Username")
+        if (user == null) {
+            call.respond(HttpStatusCode.Conflict, "Incorrect Email")
             return@post
         }
 
@@ -100,11 +100,15 @@ fun Route.signIn(
         call.respond(
             status = HttpStatusCode.OK,
             message = AuthResponse(
-                token = token
+                token = token,
+                name = user.name ?: "Empty",
+                email = user.email
             )
         )
     }
 }
+
+
 
 fun Route.authenticate() {
     authenticate {
