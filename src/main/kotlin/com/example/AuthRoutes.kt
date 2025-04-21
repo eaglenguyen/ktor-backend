@@ -30,8 +30,11 @@ fun Route.signUp(
         }
          val areFieldsBlank = request.name!!.isBlank() || request.email.isBlank() || request.password.isBlank()
          val isPwTooShort = request.password.length < 8
-         if (areFieldsBlank || isPwTooShort) {
-             call.respond(HttpStatusCode.Conflict)
+         val isEmailInvalid = !request.email.contains("@") || !request.email.contains(".") || request.email.length < 9
+
+
+         if (areFieldsBlank || isPwTooShort || isEmailInvalid) {
+             call.respond(HttpStatusCode.Conflict, "Password too short")
              return@post
          }
 
